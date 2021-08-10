@@ -155,6 +155,7 @@ ON ws.website_session_id = wp.website_session_id
 WHERE ws.created_at < '2012-06-14'
 GROUP BY wp.website_session_id;
 
+DROP TABLE IF EXISTS sessions_w_landing_page;
 CREATE TEMPORARY TABLE sessions_w_landing_page
 SELECT 
 first_pageview.website_session_id,
@@ -202,6 +203,22 @@ GROUP BY swlp.landing_page
 ORDER BY
 swlp.website_session_id
 ;
+
+-- bounce rate almost 60% -- it's high from experience, especially for paid search, which should be high quality traffic
+-- website manager then will put together a custom landing page for search, and set up an experiment to see if the new page
+-- does better. 
+## Next steps: 
+## keep an eye on bounce rates, which represent a major area of improvement
+## help website manager measure and analyze a new page that she thinks will improve performance, and analyze results of an A/B 
+## split test against the homepage
+
+
+
+
+
+
+
+
 
 
 
