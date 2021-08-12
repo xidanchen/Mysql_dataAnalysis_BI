@@ -255,14 +255,39 @@ FROM to_page_sessions
 
 /*
 8.	I’d love for you to quantify the impact of our billing test, as well. Please analyze the lift generated 
-from the test (Sep 10 – Nov 10), in terms of revenue per billing page session, and then pull the number 
+from the test (Sep 10 – Nov 10), in terms of (revenue) per billing page session, and then pull the number 
 of billing page sessions for the past month to understand monthly impact.
 */ 
 
-'2012-09-10' '2012-11-10'
+SELECT DISTINCT pageview_url
+FROM website_pageviews;  -- the new billing test: billing-2
 
+SELECT
+wp.pageview_url,
+COUNT(DISTINCT wp.website_session_id) AS sessions,
+-- price_usd
+SUM(price_usd) AS revenue,
+SUM(price_usd)/COUNT(DISTINCT wp.website_session_id) AS revenue_per_session
+FROM website_pageviews wp 
+LEFT JOIN orders o 
+ON wp.website_session_id = o.website_session_id
+WHERE wp.created_at BETWEEN '2012-09-10' AND '2012-11-10'
+AND wp.pageview_url IN ('/billing', '/billing-2')
+GROUP BY pageview_url
+;
 
+-- 23.05 for billing    31.31 for billing2
+-- lift 8.26 per billing session
 
+SELECT 
+COUNT(website_session_id) AS sessions_past_month
+FROM website_pageviews 
+WHERE website_pageviews.pageview_url IN ('/billing','/billing-2') 
+AND created_at BETWEEN '2012-10-27' AND '2012-11-27' -- past month
+;
+
+-- 1071 all sessions
+-- VALUE OF BILLING TEST: 1071*8.26 = 8846.46 over the past month
 
 
 
