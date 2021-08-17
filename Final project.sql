@@ -140,18 +140,47 @@ GROUP BY yr, mth
 Could you please pull sales data since then, 
 and show how well each product cross-sells from one another? */
 
+CREATE TEMPORARY TABLE cross_sells
+SELECT
+o.order_id,
+o.primary_product_id,
+oi.product_id AS cross_sell_product
+FROM orders o
+LEFT JOIN order_items oi
+ON o.order_id = oi.order_id
+AND oi.is_primary_item = 0
+WHERE o.created_at > '2014-12-05'
+;
+
+
+
+SELECT
+primary_product_id, 
+COUNT(DISTINCT order_id) AS orders,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 1 THEN order_id ELSE NULL END) AS product1_cross_sell,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 2 THEN order_id ELSE NULL END) AS product2_cross_sell,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 3 THEN order_id ELSE NULL END) AS product3_cross_sell,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 4 THEN order_id ELSE NULL END) AS product4_cross_sell,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 1 THEN order_id ELSE NULL END)/COUNT(DISTINCT order_id) AS product1_cross_sell_rt,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 2 THEN order_id ELSE NULL END)/COUNT(DISTINCT order_id) AS product2_cross_sell_rt,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 3 THEN order_id ELSE NULL END)/COUNT(DISTINCT order_id) AS product3_cross_sell_rt,
+COUNT(DISTINCT CASE WHEN cross_sell_product = 4 THEN order_id ELSE NULL END)/COUNT(DISTINCT order_id) AS product4_cross_sell_rt
+FROM cross_sells
+GROUP BY primary_product_id
+ORDER BY primary_product_id
+;
+
+/* product1 sells best and it cross sells best with product 4.
+   product2 cross sells best with product 4.
+   product3 cross sells best with product 4. 
+   it seems like product 4 is really a popular product, and worth to launch it as an independent product. */
+   
+   
+   
 
 
 
 
-
-
-
-
-
-/* task8: In addition to telling investors about what we’ve already achieved, let’s show them that we still have plenty of 
-gas in the tank. Based on all the analysis you’ve done, could you share some recommendations and 
-opportunities for us going forward? No right or wrong answer here – I’d just like to hear your perspective! */
 
 
 
